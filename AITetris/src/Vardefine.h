@@ -10,6 +10,12 @@
 #ifndef VARDEFINE_H_
 #define VARDEFINE_H_
 
+static int poolDeep = 26;
+
+static int poolWide = 12;
+
+static int Wall = 2;
+
 static const uint16_t Tetrisshape[7][4] =  //clockwise
 {
 		{0x00f0, 0x4444, 0x00f0, 0x4444}, //I
@@ -21,7 +27,7 @@ static const uint16_t Tetrisshape[7][4] =  //clockwise
 		{0x0660, 0x0660, 0x0660, 0x0660}, //O
 };
 
-static const uint16_t Originalgamepool[28] =
+static const uint16_t Originalgamepool[poolDeep + Wall] =
 {
 		0xc003, 0xc003, 0xc003, 0xc003, //hide
 		0xc003, 0xc003, 0xc003, 0xc003,

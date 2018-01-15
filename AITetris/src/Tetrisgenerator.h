@@ -15,16 +15,22 @@ class Tetrisgenerator {
 
 	public:
 
-		static std::unique_ptr<Tetrisgenerator> getTgenerator(); //singleton mode
+		static std::shared_ptr<Tetrisgenerator> getTgenerator(); //singleton mode
 		virtual ~Tetrisgenerator();
 		void generateTetris(); // generate the next Tetris and set up the x and y of the current Tetris
+		int getX();
+		bool setX(int);
+		int getY();
+		bool setY(int);
+		void rotate();
+
 
 	private:
 
 		Tetrisgenerator();
 		void nextTetris();  // generate the next Tetris
-		static std::unique_ptr<Tetrisgenerator> Tgenerator;
-		int8_t x, y;
+		static std::shared_ptr<Tetrisgenerator> Tgenerator;
+		int x, y;
 		int type[2]; //save the type of current Tetris and the next Tetris
 		int orientation[2]; // save the orientation of current Tetris and the next Tetris
 };

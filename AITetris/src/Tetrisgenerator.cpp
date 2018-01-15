@@ -17,13 +17,40 @@ Tetrisgenerator::Tetrisgenerator() : x(0), y(0) {
 	memset(orientation, -1, sizeof(orientation));
 }
 
-std::unique_ptr<Tetrisgenerator> Tetrisgenerator::getTgenerator() {
+std::shared_ptr<Tetrisgenerator> Tetrisgenerator::getTgenerator() {
 
 	if (Tgenerator == NULL) {
-		Tgenerator = std::unique_ptr<Tetrisgenerator>(new Tetrisgenerator());
+		Tgenerator = std::shared_ptr<Tetrisgenerator>(new Tetrisgenerator());
 	}
 	return Tgenerator;
 
+}
+
+int Tetrisgenerator::getX() {
+	return x;
+}
+
+bool Tetrisgenerator::setX(int val) {
+	x = val;
+	return true;
+}
+
+int Tetrisgenerator::getY() {
+	return y;
+}
+
+bool Tetrisgenerator::setY(int val) {
+	y = val;
+	return true;
+}
+
+void Tetrisgenerator::rotate() {
+	if (orientation[0] > -1)
+		orientation[0] = orientation[0] + 1;
+	else
+		orientation[0] = 0;
+	if (orientation[0] > 3)
+		orientation[0] = 0;
 }
 
 void Tetrisgenerator::nextTetris() {

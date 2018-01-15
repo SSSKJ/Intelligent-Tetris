@@ -14,11 +14,11 @@ class Window {
 
 	public:
 		virtual ~Window();
-		static std::unique_ptr<Window> getWindow();
+		static std::shared_ptr<Window> getWindow();
 
 	private:
 		Window();
-		static std::unique_ptr<Window> window;
+		static std::shared_ptr<Window> window;
 
 };
 

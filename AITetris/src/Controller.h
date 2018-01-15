@@ -6,6 +6,7 @@
  */
 
 #include <memory>
+#include <time.h>
 
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
@@ -13,7 +14,7 @@
 class Controller {
 	public:
 
-		static std::unique_ptr<Controller> getTcontroller();
+		static std::shared_ptr<Controller> getTcontroller();
 		virtual ~Controller();
 		void init(); //print the menu
 		void runGame();
@@ -22,15 +23,19 @@ class Controller {
 	private:
 
 		Controller();
+		void KeyBoardHandler();
+		void autoMove(clock_t&, clock_t&);
+		void removeTetris();
+		void insertTetris();
 		void moveDown();
 		void moveLeft();
 		void moveRight();
 		void fall();
 		void transform();
 		bool checkcollision();
-		void KeyBoardHandler();
-		void insertTetris();
-		static std::unique_ptr<Controller> Tcontroller;
+		bool end;
+		int level;
+		static std::shared_ptr<Controller> Tcontroller;
 
 };
 
