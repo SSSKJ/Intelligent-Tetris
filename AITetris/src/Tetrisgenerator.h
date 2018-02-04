@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include "Vardefine.h"
 
 #ifndef TETRISGENERATOR_H_
 #define TETRISGENERATOR_H_
@@ -22,17 +23,23 @@ class Tetrisgenerator {
 		bool setX(int);
 		int getY();
 		bool setY(int);
-		void rotate();
-
+		void CWRotate();
+		void antiCWRotate();
+		int* getCoordinate();
+		void getStatus(Model&);
+		void reset(Model);
+		uint16_t getTetris();
 
 	private:
 
 		Tetrisgenerator();
 		void nextTetris();  // generate the next Tetris
+		void recordCoordinate();  //record 4 relative coordinates of the Tetris
 		static std::shared_ptr<Tetrisgenerator> Tgenerator;
-		int x, y;
+		int x, y; //top left cornor
 		int type[2]; //save the type of current Tetris and the next Tetris
 		int orientation[2]; // save the orientation of current Tetris and the next Tetris
+		int coordinate[4];
 };
 
 #endif /* TETRIS_H_ */

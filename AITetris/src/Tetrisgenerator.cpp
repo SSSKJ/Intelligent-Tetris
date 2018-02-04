@@ -44,13 +44,29 @@ bool Tetrisgenerator::setY(int val) {
 	return true;
 }
 
-void Tetrisgenerator::rotate() {
-	if (orientation[0] > -1)
-		orientation[0] = orientation[0] + 1;
-	else
-		orientation[0] = 0;
+void Tetrisgenerator::CWRotate() {
+
+	if (orientation[0] == -1)
+		return;
+
+	orientation[0] = orientation[0] + 1;
 	if (orientation[0] > 3)
 		orientation[0] = 0;
+
+	recordCoordinate();
+}
+
+void Tetrisgenerator::antiCWRotate() {
+
+	if (orientation[0] == -1)
+		return;
+
+	orientation[0] = orientation[0] - 1;
+	if (orientation[0] < 0)
+		orientation[0] = 3;
+
+	recordCoordinate();
+
 }
 
 void Tetrisgenerator::nextTetris() {
@@ -68,11 +84,31 @@ void Tetrisgenerator::nextTetris() {
 
 }
 
+void Tetrisgenerator::recordCoordinate() {
+
+	uint16_t Tetris = getTetris();
+	int mark = 0;
+
+	for (int i = 0; i < 16; i++) {
+
+		if (Tetris & 1 == 1) {
+			coordinate[mark] = 15 - i;
+			mark++;
+		}
+
+		if (mark >= 5)
+			return;
+
+		Tetris = Tetris >> 1;
+	}
+}
+
 void Tetrisgenerator::generateTetris() {
 
 	nextTetris();
+	recordCoordinate();
 
-	uint16_t Tetris = Tetrisshape[type[0]][orientation[0]];
+	uint16_t Tetris = getTetris();
 
 	if (Tetris & 0x000f)
 		y = 0;
@@ -80,7 +116,35 @@ void Tetrisgenerator::generateTetris() {
 		y = (Tetris & 0x00f0)?1:2;
 	}
 
-	x = 6;
+	x = 9;
+
+}
+
+int* Tetrisgenerator::getCoordinate() {
+	return coordinate;
+}
+
+void Tetrisgenerator::getStatus(Model& status) {
+
+	status.x = x;
+	status.y = y;
+	status.orientation = orientation[0];
+	memcpy(status.coordinate, coordinate, sizeof(int[4]));
+
+}
+
+void Tetrisgenerator::reset(Model lastStatus) {
+
+	x = lastStatus.x;
+	y = lastStatus.y;
+	orientation[0] = lastStatus.orientation;
+	memcpy(coordinate, lastStatus.coordinate, sizeof(int[4]));
+
+}
+
+uint16_t Tetrisgenerator::getTetris() {
+
+	return Tetrisshape[type[0]][orientation[0]];
 
 }
 

@@ -38,6 +38,13 @@ static const uint16_t Originalgamepool[poolDeep + Wall] =
 		0xc003, 0xc003, 0xffff, 0xffff,
 };
 
+struct Model {
+	int x;
+	int y;
+	int orientation;
+	int coordinate[4];
+};
+
 
 
 #endif /* VARDEFINE_H_ */
