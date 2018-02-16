@@ -5,9 +5,9 @@
  *      Author: SKJ.Guan
  */
 
-#include "Controller.h"
 #include "Tetrisgenerator.h"
-#include "Window.h"
+#include "DrawingTool.h"
+#include "Controller.h"
 #include "Vardefine.h"
 #include <conio.h>
 #include <cstring>
@@ -16,37 +16,46 @@
 Controller::Controller() : end(false), level(1), point(0), counter(0) {
 	// TODO Auto-generated constructor stub
 	memcpy(Gamepool, Originalgamepool, sizeof(uint16_t [poolDeep + Wall]));
-	recorder = new Model();
 }
 
 std::shared_ptr<Controller> Controller::getTcontroller() {
 
 	if (Tcontroller == NULL)
 		Tcontroller = std::shared_ptr<Controller>(new Controller());
+
 	return Tcontroller;
 
 }
 
 void init() {
-	//print the menu
+
+	auto tool = DrawingTool::getTool();
+	tool->DrawTheMenu(); //print the menu
+
 }
 
 void Controller::runGame() {
 
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
+	auto tool = DrawingTool::getTool();
+
 	Tgenerator->generateTetris();
 	insertTetris();
+	tool->handleCurrentTetris(iTetrispattern);
 	KeyBoardHandler();
 
 }
 
 void Controller::restart() {
+
+	auto tool = DrawingTool::getTool();
+
 	end = false;
 	level = 0;
 	point = 0;
 	counter = 0;
 	memcpy(Gamepool, Originalgamepool, sizeof(uint16_t [poolDeep + Wall]));
-	//print the game pool
+	tool->reprint(poolDeep - 1); //print the game pool
 }
 
 void autoRun() {
@@ -60,48 +69,78 @@ void Controller::KeyBoardHandler() {
 	last = clock();
 
 	while (!end) {
-		while (_kbhit()) {
+
+		while (kbhit()) {
+
 			now = clock();
 			autoMove(last, now);
-			key = _getch();
+			key = getch();
+
 			if (key == 27) { //esc
+
 				end = 1;
 				break;
+
 			} else {
+
 				switch(key) {
-					case 'w' : case 'W' : case '8' : case '38' :
+
+					case ' ' :
+
 						if (!checkcollision())
 							transform();
 						break;
-					case 's' : case 'S' : case '2' : case '40' :
+
+					case 's' : case 'S' : case 80:
+
 						fall();
 						break;
-					case 'a' : case 'A' : case '4' : case '37' :
+
+					case 'a' : case 'A' : case 75 :
+
 						if (!checkcollision())
 							moveLeft();
 						break;
-					case 'd' : case 'D' : case '6' : case '39' :
+
+					case 'd' : case 'D' : case 77 :
+
 						if (!checkcollision())
 							moveRight();
 						break;
-					case 'r' :
+
+					case 'r' : case 'R':
+
 						restart();
 						break;
+
+					case 'v' : case 'V':
+
+						autoRun();
+						break;
+
 					default:
 						break;
+
 				}
+
 			}
+
 		}
+
 		now = clock();
 		autoMove(last, now);
 	}
 }
 
 void Controller::autoMove(clock_t& last, clock_t& now) {
-	if (last - now > 1f / level) {
+
+	if (last - now > 1.f / level) {
+
 		moveDown();
 		last = now;
+
 	}
+
 }
 
 void Controller::removeTetris() {
@@ -137,35 +176,46 @@ void Controller::insertTetris() {
 void Controller::checkerasing() {
 
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
-	uint16_t Tetris = Tgenerator->getTetris();
+	auto tool = DrawingTool::getTool();
 
 	int mark = 0;
+	int y = Tgenerator->getY();
 
-	for (int i = 0; i < 4; i++) {
-		if (Gamepool[Tgenerator->getY() + i] & 0xffff) {
-			memmove(Gamepool + 1, Gamepool, sizeof(uint16_t) * Tgenerator->getY());
+	for (; y < Tgenerator->getY() + 4; y++) {
+
+		if (Gamepool[y] == 0xffff) {
+
+			memmove(Gamepool + 1, Gamepool, sizeof(uint16_t) * y);
 			mark++;
+
 		}
+
 	}
 
 	if (mark == 0)
 		return;
 
 	switch(mark) {
+
 		case 1 :
 			point = point + 10;
 			break;
+
 		case 2 :
 			point = point + 25;
 			break;
+
 		case 3 :
 			point = point + 40;
 			break;
+
 		case 4 :
 			point = point + 55;
 			break;
+
 		default:
 			break;
+
 	}
 
 	counter = counter + mark;
@@ -173,102 +223,139 @@ void Controller::checkerasing() {
 	if (counter >= 30)
 		level++;
 
-	//print the game pool
+	tool->reprint(y); //print the game pool
 
 }
 
 void Controller::checkend() {
+
 	if ((Gamepool[0] | Gamepool[1] | Gamepool[2] | Gamepool[3]) & 0x3ffc)
-		return;
-	end = 1;
+		end = 1;
+
 }
 
 void Controller::moveDown() {
 
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
-	removeTetris();
+	auto tool = DrawingTool::getTool();
+
 	Tgenerator->getStatus(recorder);
+	removeTetris();
 	Tgenerator->setY(recorder.y + 1);
+
 	if (!checkcollision()) {
+
 		insertTetris();
-		//remove the last one
-		//print the Tetris
+		tool->handleTetris(recorder, rTetrispattern); //remove the last one
+		tool->handleCurrentTetris(iTetrispattern); //print the Tetris
+
 	} else {
+
 		checkerasing();
 		checkend();
 		Tgenerator->generateTetris();
 		insertTetris();
-		//print the Tetris
+		tool->handleCurrentTetris(iTetrispattern); //print the Tetris
+
 	}
+
 }
 
 void Controller::moveLeft() {
 
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
-	removeTetris();
+	auto tool = DrawingTool::getTool();
+
 	Tgenerator->getStatus(recorder);
-	Tgenerator->setX(recorder.x - 1);
+	removeTetris();
+	Tgenerator->setX(recorder.x + 1);
+
 	if (!checkcollision()) {
+
 		insertTetris();
-		//remove the last one
-		//print the Tetris
+		tool->handleTetris(recorder, rTetrispattern); //remove the last one
+		tool->handleCurrentTetris(iTetrispattern); //print the Tetris
+
 	} else {
+
 		Tgenerator->reset(recorder);
 		insertTetris();
+
 	}
+
 }
 
 void Controller::moveRight() {
 
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
-	removeTetris();
+	auto tool = DrawingTool::getTool();
+
 	Tgenerator->getStatus(recorder);
-	Tgenerator->setX(recorder.x + 1);
+	removeTetris();
+	Tgenerator->setX(recorder.x - 1);
+
 	if (!checkcollision()) {
+
 		insertTetris();
-		//remove the last one
-		//print the Tetris
+		tool->handleTetris(recorder, rTetrispattern);//remove the last one
+		tool->handleCurrentTetris(iTetrispattern);//print the Tetris
+
 	} else {
+
 		Tgenerator->reset(recorder);
 		insertTetris();
+
 	}
+
 }
 
 void Controller::fall() {
 
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
+	auto tool = DrawingTool::getTool();
+
 	removeTetris();
-	//remove the Tetris
+	tool->handleCurrentTetris(rTetrispattern); //remove the Tetris
 
 	do {
+
 		Tgenerator->getStatus(recorder);
 		Tgenerator->setY(recorder.y + 1);
+
 	} while (!checkcollision());
 
 	Tgenerator->reset(recorder);
 	insertTetris();
-	//print the Tetris
+	tool->handleCurrentTetris(iTetrispattern); //print the Tetris
 	checkerasing();
 	checkend();
-	Tgenerator->reset(recorder);
+	Tgenerator->generateTetris();
 	insertTetris();
-	//print the Tetris
+	tool->handleCurrentTetris(iTetrispattern); //print the Tetris
 }
 
 void Controller::transform() {
 
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
-	removeTetris();
+	auto tool = DrawingTool::getTool();
+
 	Tgenerator->getStatus(recorder);
+	removeTetris();
 	Tgenerator->CWRotate();
+
 	if (!checkcollision()) {
+
 		insertTetris();
-		//remove the last one
-		//print the Tetris
+		tool->handleTetris(recorder, rTetrispattern); //remove the last one
+		tool->handleCurrentTetris(iTetrispattern); //print the Tetris
+
 	} else {
+
 		Tgenerator->reset(recorder);
 		insertTetris();
+
 	}
+
 }
 
 bool Controller::checkcollision() {
@@ -280,16 +367,22 @@ bool Controller::checkcollision() {
 	int x = Tgenerator->getX();
 
 	for (int i = 0; i < 4; i++) {
-		if (Gamepool[y + i] & ((Tetris >> ((3 - i) * 4)) & 0x000f) << (x - 3))
-			return 0;
+
+		if (Gamepool[y + i] & (((Tetris >> ((3 - i) * 4)) & 0x000f) << (x - 3)))
+			return 1;
+
 	}
 
-	return 1;
+	return 0;
+}
+
+uint16_t* Controller::getGamepool() {
+	return Gamepool;
 }
 
 Controller::~Controller() {
 	// TODO Auto-generated destructor stub
 }
 
-std::unique_ptr<Controller> Controller::Tcontroller = NULL;
+std::shared_ptr<Controller> Controller::Tcontroller = NULL;
 

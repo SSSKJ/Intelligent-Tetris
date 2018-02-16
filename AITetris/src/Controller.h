@@ -20,21 +20,22 @@ class Controller {
 		void init(); //print the menu
 		void runGame();
 		void autoRun(); //AI
+		uint16_t* getGamepool();
 
 	private:
 
 		Controller();
 		void KeyBoardHandler();
-		void autoMove(clock_t&, clock_t&);
-		void removeTetris();
-		void insertTetris();
+		void autoMove(clock_t&, clock_t&); // move down automatically
+		void removeTetris(); // remove Tetris from Gamepool
+		void insertTetris(); // insert Tetris into Gamepool
 		void moveDown();
 		void moveLeft();
 		void moveRight();
 		void fall();
 		void transform();
 		void checkerasing();
-		void checkend();
+		void checkend(); // check whether the game is end
 		void restart();
 		bool checkcollision();
 		bool end;

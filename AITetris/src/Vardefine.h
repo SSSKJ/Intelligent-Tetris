@@ -6,15 +6,18 @@
  */
 
 #include <stdint.h>
+#include <iostream>
+
+using std::string;
 
 #ifndef VARDEFINE_H_
 #define VARDEFINE_H_
 
-static int poolDeep = 26;
+static const int poolDeep = 26;
 
-static int poolWide = 12;
+static const int poolWidth = 12;
 
-static int Wall = 2;
+static const int Wall = 2;
 
 static const uint16_t Tetrisshape[7][4] =  //clockwise
 {
@@ -45,6 +48,52 @@ struct Model {
 	int coordinate[4];
 };
 
+static const int windowWidth = 38;
+
+static const int windowLength = 30;
+
+static const string menu[windowLength] = {
+		"©³©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©·©³©¥©¥©¥©¥©¥©¥©¥©¥©¥©·",
+		"©§                         ©§©§         ©§",
+		"©§                         ©§©§         ©§",
+		"©§                         ©§©§         ©§",
+		"©§                         ©§©§         ©§",
+		"©§                         ©§©»©¥©¥©¥©¥©¥©¥©¥©¥©¥©¿",
+		"©§                         ©§©³©¥©¥©¥©¥©¥©¥©¥©¥©¥©·",
+		"©§                         ©§©§MoveLeft ©§",
+		"©§                         ©§©§  D or ¡û©§",
+		"©§                         ©§©§MoveRight©§",
+		"©§                         ©§©§  R or ¡ú©§",
+		"©§                         ©§©§DropDown ©§",
+		"©§                         ©§©§  S or ¡ý©§",
+		"©§                         ©§©§Rotate   ©§",
+		"©§                         ©§©§  Space  ©§",
+		"©§                         ©§©§Restart  ©§",
+		"©§                         ©§©§  R      ©§",
+		"©§                         ©§©§AutoPlay ©§",
+		"©§                         ©§©§  V      ©§",
+		"©§                         ©§©»©¥©¥©¥©¥©¥©¥©¥©¥©¥©¿",
+		"©§                         ©§©³©¥©¥©¥©¥©¥©¥©¥©¥©¥©·",
+		"©§                         ©§©§ Score   ©§",
+		"©§                         ©§©§ 0       ©§",
+		"©§                         ©§©§ Erased  ©§",
+		"©§                         ©§©§ 0       ©§",
+		"©§                         ©§©§ Level   ©§",
+		"©§                         ©§©§ 1       ©§",
+		"©»©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¿©»©¥©¥©¥©¥©¥©¥©¥©¥©¥©¿"
+};
+
+static const int poolStartX = 2;
+
+static const int poolStartY = 2;
+
+static const int showStartX = 37;
+
+static const int showStartY = 1;
+
+static const string iTetrispattern = "¡ö"; //use for inserting Tetris
+
+static const string rTetrispattern = "  "; //use for removing Tetris
 
 
 #endif /* VARDEFINE_H_ */

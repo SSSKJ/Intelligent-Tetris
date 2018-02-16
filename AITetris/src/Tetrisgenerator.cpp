@@ -96,7 +96,7 @@ void Tetrisgenerator::recordCoordinate() {
 			mark++;
 		}
 
-		if (mark >= 5)
+		if (mark >= 4)
 			return;
 
 		Tetris = Tetris >> 1;
@@ -152,5 +152,5 @@ Tetrisgenerator::~Tetrisgenerator() {
 	// TODO Auto-generated destructor stub
 }
 
-std::unique_ptr<Tetrisgenerator> Tetrisgenerator::Tgenerator = NULL;
+std::shared_ptr<Tetrisgenerator> Tetrisgenerator::Tgenerator = NULL;
 
