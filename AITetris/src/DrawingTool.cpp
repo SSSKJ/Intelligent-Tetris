@@ -33,7 +33,6 @@ void DrawingTool::DrawTheMenu() {
 //	string s = "mode con cols=" + std::to_string(windowWidth) + " lines=" + std::to_string(windowLength);
 //	const char * y = s.c_str();
 //	system(y);
-	cout << endl;
 	for (int i = 0; i < windowLength; i++)
 		cout << menu[i] << endl;
 
@@ -67,8 +66,15 @@ void DrawingTool::handleCurrentTetris(const string Tetrispattern) {//remove Tetr
 
 		int rY = tetris.coordinate[i] / 4;
 		int rX = tetris.coordinate[i] % 4;
-		gotoXY(poolStartX + 2 * poolWidth - (tetris.x - rX) , tetris.y + poolStartY + rY);
-		cout << Tetrispattern;
+		int x = poolStartX + 2 * (poolWidth - 1 - (tetris.x - rX - Wall));
+		int y = tetris.y + poolStartY + rY - 4;
+
+		if (tetris.y + rY - 4 >= 0) {
+
+			gotoXY(x, y);
+			cout << Tetrispattern;
+
+		}
 
 	}
 
@@ -78,10 +84,17 @@ void DrawingTool::handleTetris(const Model tetris, const string Tetrispattern) {
 
 	for (int i = 0; i < 4; i++) {
 
-			int rY = tetris.coordinate[i] / 4;
-			int rX = tetris.coordinate[i] % 4;
-			gotoXY(poolStartX + 2 * poolWidth - (tetris.x - rX) , tetris.y + poolStartY + rY);
+		int rY = tetris.coordinate[i] / 4;
+		int rX = tetris.coordinate[i] % 4;
+		int x = poolStartX + 2 * (poolWidth - 1 - (tetris.x - rX - Wall));
+		int y = tetris.y + poolStartY + rY - 4;
+
+		if (tetris.y + rY - 4 >= 0) {
+
+			gotoXY(x, y);
 			cout << Tetrispattern;
+
+		}
 
 	}
 
@@ -91,14 +104,14 @@ void DrawingTool::reprint(int y) {
 
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
 	auto Tcontroller = Controller::getTcontroller();
-	auto pool = Tcontroller->getGamepool();
+	uint16_t* pool = Tcontroller->getGamepool();
 
-	for (int i = 0; i < y; i++) {
+	for (int i = 4; i <= y; i++) {
 
-		gotoXY(poolStartX, poolStartY + i);
+		gotoXY(poolStartX, poolStartY + i - 4);
 		uint16_t temp = *(pool + i) >> 2;
 
-		for (int j = 11; j > 0; j--) {
+		for (int j = 11; j >= 0; j--) {
 
 			if ((temp >> j) & 0x0001)
 				cout << iTetrispattern;
@@ -113,7 +126,7 @@ void DrawingTool::reprint(int y) {
 void DrawingTool::printNextTetris() {
 
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
-	auto Tetris = Tgenerator->getTetris();
+	auto Tetris = Tgenerator->getNextTetris();
 
 	for (int i = 3; i >= 0; i--) {
 
@@ -132,7 +145,49 @@ void DrawingTool::printNextTetris() {
 
 }
 
-void DrawingTool::printtest() {
+void DrawingTool::updateInfo(const int info) {
+
+	auto Tcontroller = Controller::getTcontroller();
+
+	switch(info) {
+
+		case 'l' :
+
+			gotoXY(showInfoX, showLevelY);
+			cout << Tcontroller->getLevel();
+			break;
+
+		case 'p' :
+
+			gotoXY(showInfoX, showPointY);
+			cout << Tcontroller->getPoint();
+			break;
+
+		case 'c' :
+
+			gotoXY(showInfoX, showCounterY);
+			cout << Tcontroller->getCounter();
+			break;
+
+		default:
+
+			break;
+
+	}
+
+}
+
+void DrawingTool::gameOver() {
+
+	gotoXY(showGameOverX, showGameOverY);
+	cout << "Game Over!!";
+
+}
+
+void DrawingTool::printtest(int mark, int i, int y) {
+
+	gotoXY(0, 29 + i);
+	cout << mark << " " << y;
 
 }
 

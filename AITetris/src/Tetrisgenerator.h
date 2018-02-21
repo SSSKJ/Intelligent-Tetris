@@ -29,6 +29,7 @@ class Tetrisgenerator {
 		void getStatus(Model&);
 		void reset(Model);
 		uint16_t getTetris();
+		uint16_t getNextTetris();
 
 	private:
 

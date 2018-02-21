@@ -9,9 +9,11 @@
 #include "DrawingTool.h"
 #include "Controller.h"
 #include "Vardefine.h"
+#include <time.h>
 #include <conio.h>
 #include <cstring>
 #include <stack>
+#include <iostream>
 
 Controller::Controller() : end(false), level(1), point(0), counter(0) {
 	// TODO Auto-generated constructor stub
@@ -27,7 +29,7 @@ std::shared_ptr<Controller> Controller::getTcontroller() {
 
 }
 
-void init() {
+void Controller::init() {
 
 	auto tool = DrawingTool::getTool();
 	tool->DrawTheMenu(); //print the menu
@@ -41,6 +43,7 @@ void Controller::runGame() {
 
 	Tgenerator->generateTetris();
 	insertTetris();
+	tool->printNextTetris();
 	tool->handleCurrentTetris(iTetrispattern);
 	KeyBoardHandler();
 
@@ -48,21 +51,27 @@ void Controller::runGame() {
 
 void Controller::restart() {
 
-	auto tool = DrawingTool::getTool();
-
-	end = false;
-	level = 0;
-	point = 0;
-	counter = 0;
-	memcpy(Gamepool, Originalgamepool, sizeof(uint16_t [poolDeep + Wall]));
-	tool->reprint(poolDeep - 1); //print the game pool
+//	auto tool = DrawingTool::getTool();
+//
+//	end = false;
+//	level = 0;
+//	point = 0;
+//	counter = 0;
+//	memcpy(Gamepool, Originalgamepool, sizeof(uint16_t [poolDeep + Wall]));
+//	tool->updateInfo(1);
+//	tool->updateInfo(2);
+//	tool->updateInfo(3);
+//	tool->reprint(poolDeep - 1); //print the game pool
+//	runGame();
 }
 
-void autoRun() {
+void Controller::autoRun() {
 	//call the AI-function
 }
 
 void Controller::KeyBoardHandler() {
+
+	auto tool = DrawingTool::getTool();
 
 	int key = 0;
 	clock_t last, now;
@@ -85,40 +94,43 @@ void Controller::KeyBoardHandler() {
 
 				switch(key) {
 
-					case ' ' :
+					case 'w' : case 'W' : case 72 :
 
-						if (!checkcollision())
-							transform();
+						transform();
 						break;
 
-					case 's' : case 'S' : case 80:
+					case 's' : case 'S' : case 80 :
 
-						fall();
+						moveDown();
 						break;
 
 					case 'a' : case 'A' : case 75 :
 
-						if (!checkcollision())
-							moveLeft();
+						moveLeft();
 						break;
 
 					case 'd' : case 'D' : case 77 :
 
-						if (!checkcollision())
-							moveRight();
+						moveRight();
 						break;
 
-					case 'r' : case 'R':
+//					case 'r' : case 'R' :
+//
+//						restart();
+//						break;
 
-						restart();
+					case ' ' :
+
+						fall();
 						break;
 
-					case 'v' : case 'V':
+					case 'v' : case 'V' :
 
 						autoRun();
 						break;
 
 					default:
+
 						break;
 
 				}
@@ -129,12 +141,30 @@ void Controller::KeyBoardHandler() {
 
 		now = clock();
 		autoMove(last, now);
+
 	}
+
+	tool->gameOver();
+
+	while (1) {
+
+		key = getch();
+
+		if (key == 27)
+			return;
+
+//			case 'r' : case 'R' :
+//
+//				restart();
+//				break;
+
+	}
+
 }
 
 void Controller::autoMove(clock_t& last, clock_t& now) {
 
-	if (last - now > 1.f / level) {
+	if (now - last > 0.8f / level * CLOCKS_PER_SEC) {
 
 		moveDown();
 		last = now;
@@ -181,7 +211,7 @@ void Controller::checkerasing() {
 	int mark = 0;
 	int y = Tgenerator->getY();
 
-	for (; y < Tgenerator->getY() + 4; y++) {
+	for (;(y < 26) && y < Tgenerator->getY() + 4; y++) {
 
 		if (Gamepool[y] == 0xffff) {
 
@@ -218,12 +248,19 @@ void Controller::checkerasing() {
 
 	}
 
+	tool->updateInfo('p');
+
 	counter = counter + mark;
+	tool->updateInfo('c');
 
-	if (counter >= 30)
+	if (counter / ValueToLevelUp >= level) {
+
 		level++;
+		tool->updateInfo('l');
 
-	tool->reprint(y); //print the game pool
+	}
+
+	tool->reprint(y - 1); //print the game pool
 
 }
 
@@ -251,11 +288,14 @@ void Controller::moveDown() {
 
 	} else {
 
+		Tgenerator->reset(recorder);
+		insertTetris();
 		checkerasing();
 		checkend();
 		Tgenerator->generateTetris();
 		insertTetris();
 		tool->handleCurrentTetris(iTetrispattern); //print the Tetris
+		tool->printNextTetris();
 
 	}
 
@@ -332,6 +372,8 @@ void Controller::fall() {
 	Tgenerator->generateTetris();
 	insertTetris();
 	tool->handleCurrentTetris(iTetrispattern); //print the Tetris
+	tool->printNextTetris();
+
 }
 
 void Controller::transform() {
@@ -378,6 +420,18 @@ bool Controller::checkcollision() {
 
 uint16_t* Controller::getGamepool() {
 	return Gamepool;
+}
+
+int Controller::getLevel() {
+	return level;
+}
+
+int Controller::getPoint() {
+	return point;
+}
+
+int Controller::getCounter() {
+	return counter;
 }
 
 Controller::~Controller() {

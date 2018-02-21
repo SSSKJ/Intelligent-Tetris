@@ -21,6 +21,9 @@ class Controller {
 		void runGame();
 		void autoRun(); //AI
 		uint16_t* getGamepool();
+		int getLevel();
+		int getPoint();
+		int getCounter();
 
 	private:
 

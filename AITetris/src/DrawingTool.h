@@ -22,7 +22,9 @@ class DrawingTool {
 		void handleTetris(const Model, const string);
 		void reprint(int y);
 		void printNextTetris();
-		void printtest();
+		void updateInfo(const int);
+		void gameOver();
+		void printtest(int ,int, int);
 
 	private:
 		DrawingTool();

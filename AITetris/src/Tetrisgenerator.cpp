@@ -79,8 +79,12 @@ void Tetrisgenerator::nextTetris() {
 	type[1] = t(e);
 	orientation[1] = o(e);
 
-	if (type[0] == -1)
+	if (type[0] == -1) {
+
+		type[1] = t(e);
 		nextTetris();
+
+	}
 
 }
 
@@ -91,7 +95,7 @@ void Tetrisgenerator::recordCoordinate() {
 
 	for (int i = 0; i < 16; i++) {
 
-		if (Tetris & 1 == 1) {
+		if ((Tetris & 0x0001) == 1) {
 			coordinate[mark] = 15 - i;
 			mark++;
 		}
@@ -146,6 +150,10 @@ uint16_t Tetrisgenerator::getTetris() {
 
 	return Tetrisshape[type[0]][orientation[0]];
 
+}
+
+uint16_t Tetrisgenerator::getNextTetris() {
+	return Tetrisshape[type[1]][orientation[1]];
 }
 
 Tetrisgenerator::~Tetrisgenerator() {

@@ -6,12 +6,14 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include <iostream>
-using namespace std;
+#include "Controller.h"
 
 int main() {
-	int t[2];
-	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
-	cout << t[0] << ", " << t[1] << endl;
+
+	auto controller = Controller::getTcontroller();
+
+	controller->init();
+	controller->runGame();
+
 	return 0;
 }

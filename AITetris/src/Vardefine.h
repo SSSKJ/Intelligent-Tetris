@@ -21,12 +21,12 @@ static const int Wall = 2;
 
 static const uint16_t Tetrisshape[7][4] =  //clockwise
 {
-		{0x00f0, 0x4444, 0x00f0, 0x4444}, //I
+		{0x2222, 0x0f00, 0x2222, 0x0f00}, //I
 		{0x0720, 0x2620, 0x2700, 0x2320}, //T
-		{0x2230, 0x0170, 0x6220, 0x0f40}, //L
-		{0x2260, 0x0710, 0x3220, 0x4700}, //J
+		{0x2230, 0x0740, 0x6220, 0x1700}, //L
+		{0x2260, 0x4700, 0x3220, 0x0710}, //J
 		{0x0630, 0x2640, 0x0630, 0x2640}, //Z
-		{0x0360, 0x2310, 0x0360, 0x2310}, //S
+		{0x0360, 0x4620, 0x0360, 0x4620}, //S
 		{0x0660, 0x0660, 0x0660, 0x0660}, //O
 };
 
@@ -64,20 +64,20 @@ static const string menu[windowLength] = {
 		"©§                         ©§©§  D or ¡û©§",
 		"©§                         ©§©§MoveRight©§",
 		"©§                         ©§©§  R or ¡ú©§",
-		"©§                         ©§©§DropDown ©§",
+		"©§                         ©§©§MoveDown ©§",
 		"©§                         ©§©§  S or ¡ý©§",
 		"©§                         ©§©§Rotate   ©§",
+		"©§                         ©§©§  W or ¡ü©§",
+		"©§                         ©§©§DropDown ©§",
 		"©§                         ©§©§  Space  ©§",
-		"©§                         ©§©§Restart  ©§",
-		"©§                         ©§©§  R      ©§",
 		"©§                         ©§©§AutoPlay ©§",
 		"©§                         ©§©§  V      ©§",
 		"©§                         ©§©»©¥©¥©¥©¥©¥©¥©¥©¥©¥©¿",
 		"©§                         ©§©³©¥©¥©¥©¥©¥©¥©¥©¥©¥©·",
-		"©§                         ©§©§ Score   ©§",
+		"©§                         ©§©§ Point   ©§",
 		"©§                         ©§©§ 0       ©§",
-		"©§                         ©§©§ Erased  ©§",
-		"©§                         ©§©§ 0       ©§",
+		"©»©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¿©§ Counter ©§",
+		"©³©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©·©§ 0       ©§",
 		"©§                         ©§©§ Level   ©§",
 		"©§                         ©§©§ 1       ©§",
 		"©»©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¿©»©¥©¥©¥©¥©¥©¥©¥©¥©¥©¿"
@@ -85,9 +85,9 @@ static const string menu[windowLength] = {
 
 static const int poolStartX = 2;
 
-static const int poolStartY = 2;
+static const int poolStartY = 1;
 
-static const int showStartX = 37;
+static const int showStartX = 28;
 
 static const int showStartY = 1;
 
@@ -95,5 +95,18 @@ static const string iTetrispattern = "¡ö"; //use for inserting Tetris
 
 static const string rTetrispattern = "  "; //use for removing Tetris
 
+static const int showInfoX = 29;
+
+static const int showLevelY = 26;
+
+static const int showPointY = 22;
+
+static const int showCounterY = 24;
+
+static const int showGameOverX = 9;
+
+static const int showGameOverY = 25;
+
+static const int ValueToLevelUp = 30; //the threshold value to level up
 
 #endif /* VARDEFINE_H_ */
