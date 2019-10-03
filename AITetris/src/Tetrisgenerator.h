@@ -5,9 +5,10 @@
  *      Author: SKJ.Guan
  */
 
+#include "Vardefine.h"
+#include <iostream>
 #include <stdint.h>
 #include <memory>
-#include "Vardefine.h"
 
 #ifndef TETRISGENERATOR_H_
 #define TETRISGENERATOR_H_
@@ -26,10 +27,14 @@ class Tetrisgenerator {
 		void CWRotate();
 		void antiCWRotate();
 		int* getCoordinate();
-		void getStatus(Model&);
+		Model getStatus();
+		int getColor();
+		int getNextColor();
 		void reset(Model);
 		uint16_t getTetris();
 		uint16_t getNextTetris();
+		int getMarker();
+		void setMarker(int);
 
 	private:
 
@@ -41,6 +46,7 @@ class Tetrisgenerator {
 		int type[2]; //save the type of current Tetris and the next Tetris
 		int orientation[2]; // save the orientation of current Tetris and the next Tetris
 		int coordinate[4];
+		int marker;
 };
 
 #endif /* TETRIS_H_ */

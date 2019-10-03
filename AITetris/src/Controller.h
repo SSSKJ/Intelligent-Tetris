@@ -5,25 +5,28 @@
  *      Author: SKJ.Guan
  */
 
+#include "Vardefine.h"
+#include "Robot.h"
+#include <iostream>
 #include <memory>
 #include <time.h>
-#include "Vardefine.h"
 
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
 class Controller {
+
 	public:
 
 		static std::shared_ptr<Controller> getTcontroller();
 		virtual ~Controller();
 		void init(); //print the menu
 		void runGame();
-		void autoRun(); //AI
 		uint16_t* getGamepool();
 		int getLevel();
 		int getPoint();
 		int getCounter();
+		bool ifend();
 
 	private:
 
@@ -41,6 +44,8 @@ class Controller {
 		void checkend(); // check whether the game is end
 		void restart();
 		bool checkcollision();
+		void autoRun(); //AI
+		void InputHandler(const char);
 		bool end;
 		int level;
 		int point;

@@ -9,8 +9,9 @@
 #include "DrawingTool.h"
 #include "Controller.h"
 #include "Vardefine.h"
-#include <iostream>
-#include <string>
+//#include <iostream>
+//#include <string>
+//#include <memory>
 using std::cout;
 using std::endl;
 using std::string;
@@ -46,7 +47,7 @@ std::shared_ptr<DrawingTool> DrawingTool::getTool() {
 
 }
 
-void DrawingTool::gotoXY(int x, int y) {
+void DrawingTool::gotoXY(const int x, const int y) {
 
 	COORD cd;
 	cd.X = x;
@@ -58,9 +59,9 @@ void DrawingTool::gotoXY(int x, int y) {
 void DrawingTool::handleCurrentTetris(const string Tetrispattern) {//remove Tetris by passing the remove-Tetris-pattern and insert Tetris by passing the insert-Tetris-pattern
 
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
-	Model tetris;
+	Model tetris = Tgenerator->getStatus();
 
-	Tgenerator->getStatus(tetris);
+	int color = Tgenerator->getColor();
 
 	for (int i = 0; i < 4; i++) {
 
@@ -72,6 +73,7 @@ void DrawingTool::handleCurrentTetris(const string Tetrispattern) {//remove Tetr
 		if (tetris.y + rY - 4 >= 0) {
 
 			gotoXY(x, y);
+			SetConsoleTextAttribute(hout, color);
 			cout << Tetrispattern;
 
 		}
@@ -106,6 +108,8 @@ void DrawingTool::reprint(int y) {
 	auto Tcontroller = Controller::getTcontroller();
 	uint16_t* pool = Tcontroller->getGamepool();
 
+	SetConsoleTextAttribute(hout, FOREGROUND_RED |  FOREGROUND_GREEN |  FOREGROUND_BLUE);
+
 	for (int i = 4; i <= y; i++) {
 
 		gotoXY(poolStartX, poolStartY + i - 4);
@@ -123,10 +127,9 @@ void DrawingTool::reprint(int y) {
 
 }
 
-void DrawingTool::printNextTetris() {
+void DrawingTool::printNextTetris(const uint16_t nextTetris, const int color) {
 
-	auto Tgenerator = Tetrisgenerator::getTgenerator();
-	auto Tetris = Tgenerator->getNextTetris();
+
 
 	for (int i = 3; i >= 0; i--) {
 
@@ -134,9 +137,10 @@ void DrawingTool::printNextTetris() {
 
 		for (int j = 3; j >= 0; j--) {
 
-			if ((Tetris >> ((i * 4) + j)) & 0x0001)
+			if ((nextTetris >> ((i * 4) + j)) & 0x0001) {
+				SetConsoleTextAttribute(hout, color);
 				cout << iTetrispattern;
-			else
+			} else
 				cout << rTetrispattern;
 
 		}
@@ -148,6 +152,8 @@ void DrawingTool::printNextTetris() {
 void DrawingTool::updateInfo(const int info) {
 
 	auto Tcontroller = Controller::getTcontroller();
+
+	SetConsoleTextAttribute(hout, FOREGROUND_RED |  FOREGROUND_GREEN |  FOREGROUND_BLUE);
 
 	switch(info) {
 
@@ -161,12 +167,16 @@ void DrawingTool::updateInfo(const int info) {
 
 			gotoXY(showInfoX, showPointY);
 			cout << Tcontroller->getPoint();
+			if (Tcontroller->getPoint() == 0)
+				cout << "       ";
 			break;
 
 		case 'c' :
 
 			gotoXY(showInfoX, showCounterY);
 			cout << Tcontroller->getCounter();
+			if (Tcontroller->getCounter() == 0)
+				cout << "       ";
 			break;
 
 		default:
@@ -180,6 +190,7 @@ void DrawingTool::updateInfo(const int info) {
 void DrawingTool::gameOver() {
 
 	gotoXY(showGameOverX, showGameOverY);
+	SetConsoleTextAttribute(hout, FOREGROUND_RED |   FOREGROUND_GREEN);
 	cout << "Game Over!!";
 
 }

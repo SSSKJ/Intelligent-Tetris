@@ -8,11 +8,11 @@
 #include "Tetrisgenerator.h"
 #include "Vardefine.h"
 #include <random>
-#include <iostream>
+//#include <iostream>
 #include <ctime>
 #include <cstring>
 
-Tetrisgenerator::Tetrisgenerator() : x(0), y(0) {
+Tetrisgenerator::Tetrisgenerator() : x(0), y(0), marker(0) {
 	memset(type, -1, sizeof(type));
 	memset(orientation, -1, sizeof(orientation));
 }
@@ -88,6 +88,14 @@ void Tetrisgenerator::nextTetris() {
 
 }
 
+int Tetrisgenerator::getMarker() {
+	return marker;
+}
+
+void Tetrisgenerator::setMarker(int m) {
+	marker = m;
+}
+
 void Tetrisgenerator::recordCoordinate() {
 
 	uint16_t Tetris = getTetris();
@@ -116,11 +124,11 @@ void Tetrisgenerator::generateTetris() {
 
 	if (Tetris & 0x000f)
 		y = 0;
-	else {
-		y = (Tetris & 0x00f0)?1:2;
-	}
+	else
+		y = (Tetris & 0x00f0) ? 1 : 2;
 
 	x = 9;
+	marker = 1;
 
 }
 
@@ -128,13 +136,24 @@ int* Tetrisgenerator::getCoordinate() {
 	return coordinate;
 }
 
-void Tetrisgenerator::getStatus(Model& status) {
+Model Tetrisgenerator::getStatus() {
 
+	Model status;
 	status.x = x;
 	status.y = y;
 	status.orientation = orientation[0];
 	memcpy(status.coordinate, coordinate, sizeof(int[4]));
+	status.type = type[0];
 
+	return status;
+}
+
+int Tetrisgenerator::getColor() {
+	return type[0] | 8; //8 for highlight
+}
+
+int Tetrisgenerator::getNextColor() {
+	return type[1] | 8; //8 for highlight
 }
 
 void Tetrisgenerator::reset(Model lastStatus) {

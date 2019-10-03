@@ -41,11 +41,26 @@ static const uint16_t Originalgamepool[poolDeep + Wall] =
 		0xc003, 0xc003, 0xffff, 0xffff,
 };
 
+static const int rotationTimes[7] = {2, 4, 4, 4, 2, 2, 1}; // times the tetris can rotate
+
 struct Model {
 	int x;
 	int y;
 	int orientation;
 	int coordinate[4];
+	int type;
+};
+
+struct SimulatorModel {
+	int EPCM;
+	int LH;
+	int rTrans;
+	int SumCHW;
+	int evaluation;
+	int priority;
+	int rotateTimes;
+	int moveTimes;
+	Model tetris;
 };
 
 static const int windowWidth = 38;
@@ -107,6 +122,8 @@ static const int showGameOverX = 9;
 
 static const int showGameOverY = 25;
 
-static const int ValueToLevelUp = 30; //the threshold value to level up
+static const int ValueToLevelUp = 10; //the threshold value to level up
+
+static const int RobotRate = 1000;
 
 #endif /* VARDEFINE_H_ */

@@ -5,9 +5,10 @@
  *      Author: SKJ.Guan
  */
 
-#include <memory>
-#include <windows.h>
 #include "Vardefine.h"
+#include <windows.h>
+#include <iostream>
+#include <memory>
 
 #ifndef DRAWINGTOOL_H_
 #define DRAWINGTOOL_H_
@@ -18,10 +19,10 @@ class DrawingTool {
 		virtual ~DrawingTool();
 		static std::shared_ptr<DrawingTool> getTool();
 		void DrawTheMenu();
-		void handleCurrentTetris(const string);
-		void handleTetris(const Model, const string);
+		void handleCurrentTetris(const std::string);
+		void handleTetris(const Model, const std::string);
 		void reprint(int y);
-		void printNextTetris();
+		void printNextTetris(const uint16_t, const int);
 		void updateInfo(const int);
 		void gameOver();
 		void printtest(int ,int, int);
@@ -29,7 +30,7 @@ class DrawingTool {
 	private:
 		DrawingTool();
 		HANDLE hout;
-		void gotoXY(int, int);
+		void gotoXY(const int, const int);
 		static std::shared_ptr<DrawingTool> tool;
 
 };

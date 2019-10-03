@@ -8,12 +8,15 @@
 #include "Tetrisgenerator.h"
 #include "DrawingTool.h"
 #include "Controller.h"
-#include "Vardefine.h"
-#include <time.h>
+//#include "Vardefine.h"
+//#include "Robot.h"
+//#include <time.h>
+#include <thread>
 #include <conio.h>
 #include <cstring>
 #include <stack>
-#include <iostream>
+//#include <iostream>
+//#include <memory>
 
 Controller::Controller() : end(false), level(1), point(0), counter(0) {
 	// TODO Auto-generated constructor stub
@@ -43,7 +46,7 @@ void Controller::runGame() {
 
 	Tgenerator->generateTetris();
 	insertTetris();
-	tool->printNextTetris();
+	tool->printNextTetris(Tgenerator->getNextTetris(), Tgenerator->getNextColor());
 	tool->handleCurrentTetris(iTetrispattern);
 	KeyBoardHandler();
 
@@ -51,22 +54,31 @@ void Controller::runGame() {
 
 void Controller::restart() {
 
-//	auto tool = DrawingTool::getTool();
-//
-//	end = false;
-//	level = 0;
-//	point = 0;
-//	counter = 0;
-//	memcpy(Gamepool, Originalgamepool, sizeof(uint16_t [poolDeep + Wall]));
-//	tool->updateInfo(1);
-//	tool->updateInfo(2);
-//	tool->updateInfo(3);
-//	tool->reprint(poolDeep - 1); //print the game pool
-//	runGame();
+	auto tool = DrawingTool::getTool();
+	auto Tgenerator = Tetrisgenerator::getTgenerator();
+
+	end = false;
+	level = 1;
+	point = 0;
+	counter = 0;
+	memcpy(Gamepool, Originalgamepool, sizeof(uint16_t [poolDeep + Wall]));
+	tool->updateInfo('l');
+	tool->updateInfo('p');
+	tool->updateInfo('c');
+	tool->reprint(poolDeep - 1); //print the game pool
+	Tgenerator->generateTetris();
+	insertTetris();
+	tool->handleCurrentTetris(iTetrispattern); //print the Tetris
+	tool->printNextTetris(Tgenerator->getNextTetris(), Tgenerator->getNextColor());
+	tool->printNextTetris(Tgenerator->getNextTetris(), Tgenerator->getNextColor());
+
 }
 
 void Controller::autoRun() {
 	//call the AI-function
+	auto robot = Robot::getRobot();
+	robot->setStatus(!(robot->getStatus()));
+
 }
 
 void Controller::KeyBoardHandler() {
@@ -77,9 +89,21 @@ void Controller::KeyBoardHandler() {
 	clock_t last, now;
 	last = clock();
 
-	while (!end) {
+	while (1) {
 
-		while (kbhit()) {
+		while (end) {
+
+			key = getch();
+			if (key == 'r') {
+
+				restart();
+				last = clock();
+
+			}
+
+		};
+
+		if (kbhit()) {
 
 			now = clock();
 			autoMove(last, now);
@@ -91,50 +115,7 @@ void Controller::KeyBoardHandler() {
 				break;
 
 			} else {
-
-				switch(key) {
-
-					case 'w' : case 'W' : case 72 :
-
-						transform();
-						break;
-
-					case 's' : case 'S' : case 80 :
-
-						moveDown();
-						break;
-
-					case 'a' : case 'A' : case 75 :
-
-						moveLeft();
-						break;
-
-					case 'd' : case 'D' : case 77 :
-
-						moveRight();
-						break;
-
-//					case 'r' : case 'R' :
-//
-//						restart();
-//						break;
-
-					case ' ' :
-
-						fall();
-						break;
-
-					case 'v' : case 'V' :
-
-						autoRun();
-						break;
-
-					default:
-
-						break;
-
-				}
-
+				InputHandler(key);
 			}
 
 		}
@@ -144,7 +125,7 @@ void Controller::KeyBoardHandler() {
 
 	}
 
-	tool->gameOver();
+//	tool->gameOver();
 
 	while (1) {
 
@@ -152,11 +133,6 @@ void Controller::KeyBoardHandler() {
 
 		if (key == 27)
 			return;
-
-//			case 'r' : case 'R' :
-//
-//				restart();
-//				break;
 
 	}
 
@@ -211,7 +187,7 @@ void Controller::checkerasing() {
 	int mark = 0;
 	int y = Tgenerator->getY();
 
-	for (;(y < 26) && y < Tgenerator->getY() + 4; y++) {
+	for (;(y < poolDeep) && y < Tgenerator->getY() + 4; y++) {
 
 		if (Gamepool[y] == 0xffff) {
 
@@ -253,12 +229,12 @@ void Controller::checkerasing() {
 	counter = counter + mark;
 	tool->updateInfo('c');
 
-	if (counter / ValueToLevelUp >= level) {
-
-		level++;
-		tool->updateInfo('l');
-
-	}
+//	if (counter / ValueToLevelUp >= level) {
+//
+//		level++;
+//		tool->updateInfo('l');
+//
+//	}
 
 	tool->reprint(y - 1); //print the game pool
 
@@ -276,7 +252,7 @@ void Controller::moveDown() {
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
 	auto tool = DrawingTool::getTool();
 
-	Tgenerator->getStatus(recorder);
+	recorder = Tgenerator->getStatus();
 	removeTetris();
 	Tgenerator->setY(recorder.y + 1);
 
@@ -295,7 +271,7 @@ void Controller::moveDown() {
 		Tgenerator->generateTetris();
 		insertTetris();
 		tool->handleCurrentTetris(iTetrispattern); //print the Tetris
-		tool->printNextTetris();
+		tool->printNextTetris(Tgenerator->getNextTetris(), Tgenerator->getNextColor());
 
 	}
 
@@ -306,7 +282,7 @@ void Controller::moveLeft() {
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
 	auto tool = DrawingTool::getTool();
 
-	Tgenerator->getStatus(recorder);
+	recorder = Tgenerator->getStatus();
 	removeTetris();
 	Tgenerator->setX(recorder.x + 1);
 
@@ -330,7 +306,7 @@ void Controller::moveRight() {
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
 	auto tool = DrawingTool::getTool();
 
-	Tgenerator->getStatus(recorder);
+	recorder = Tgenerator->getStatus();
 	removeTetris();
 	Tgenerator->setX(recorder.x - 1);
 
@@ -359,7 +335,7 @@ void Controller::fall() {
 
 	do {
 
-		Tgenerator->getStatus(recorder);
+		recorder = Tgenerator->getStatus();
 		Tgenerator->setY(recorder.y + 1);
 
 	} while (!checkcollision());
@@ -372,7 +348,7 @@ void Controller::fall() {
 	Tgenerator->generateTetris();
 	insertTetris();
 	tool->handleCurrentTetris(iTetrispattern); //print the Tetris
-	tool->printNextTetris();
+	tool->printNextTetris(Tgenerator->getNextTetris(), Tgenerator->getNextColor());
 
 }
 
@@ -381,7 +357,7 @@ void Controller::transform() {
 	auto Tgenerator = Tetrisgenerator::getTgenerator();
 	auto tool = DrawingTool::getTool();
 
-	Tgenerator->getStatus(recorder);
+	recorder = Tgenerator->getStatus();
 	removeTetris();
 	Tgenerator->CWRotate();
 
@@ -432,6 +408,55 @@ int Controller::getPoint() {
 
 int Controller::getCounter() {
 	return counter;
+}
+
+bool Controller::ifend() {
+	return end;
+}
+
+void Controller::InputHandler(const char input) {
+
+	switch(input) {
+
+		case 'w' : case 'W' : case 72 :
+
+			transform();
+			break;
+
+		case 's' : case 'S' : case 80 :
+
+			moveDown();
+			break;
+
+		case 'a' : case 'A' : case 75 :
+			moveLeft();
+			break;
+
+		case 'd' : case 'D' : case 77 :
+
+			moveRight();
+			break;
+
+		case ' ' :
+
+			fall();
+			break;
+
+		case 'v' : case 'V' :
+
+			autoRun();
+			break;
+
+		case 'r' : case 'R' :
+
+			restart();
+			break;
+
+		default:
+			break;
+
+	}
+
 }
 
 Controller::~Controller() {
